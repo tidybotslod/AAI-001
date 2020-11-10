@@ -21,56 +21,35 @@ namespace UnitTests
             Assert.AreNotEqual(null, analyzer.AzureTextAnalyticsService);
         }
 
-        class TestCase
-        {
-            internal string input;
-            internal string[] answer;
-        }
-
-        private static TestCase[] keyWordTests = {
-           new TestCase {
-               input = "The quick brown fox jumps over the lazy dog",
-               answer = new string[] {"quick brown fox jumps", "lazy dog" } },
-           new TestCase {
-               input = "We love this trail and make the trip every year. The views are breathtaking and well worth the hike!",
-               answer = new string[] {"year", "trail", "trip", "views", "hike"} }
-        };
-
-        [DataRow(0, DisplayName = "CompleteAlphabet")]
-        [DataRow(1, DisplayName = "Microsoft Documentation Example")]
         [TestMethod]
-        public void performKeyWordTest(int testnumber)
+        public void performKeyWordTest()
         {
-            TestCase testCase = keyWordTests[testnumber];
+            string input = "We love this trail and make the trip every year. The views are breathtaking and well worth the hike!";
+            string[] answer = new string[] { "year", "trail", "trip", "views", "hike" };
 
-            List<String> keyWords = analyzer.KeyWords(testCase.input);
+            List<String> keyWords = analyzer.KeyWords(input);
             Assert.AreNotEqual(null, keyWords);
             int i;
             for (i = 0; i < keyWords.Count; i++)
             {
-                Assert.AreEqual(testCase.answer[i], keyWords[i]);
+                Assert.AreEqual(answer[i], keyWords[i]);
             }
-            Assert.AreEqual(testCase.answer.Length, i);
+            Assert.AreEqual(answer.Length, i);
         }
-
-        private static TestCase[] SentimentTestCase = {
-           new TestCase {
-               input = "The quick brown fox jumps over the lazy dog",
-               answer = new string[] { "Negative, 0.00, 0.99, 0.01, \"quick brown fox jumps\", \"lazy dog\"" }
-           }
-        };
 
         [TestMethod]
         public void performSentimentTest()
         {
+            string input = "The quick brown fox jumps over the lazy dog";
+            string answer = "Negative, 0.00, 0.99, 0.01, \"quick brown fox jumps\", \"lazy dog\"" ;
             using (System.IO.MemoryStream memory = new System.IO.MemoryStream())
             {
                 System.IO.StreamWriter writer = new System.IO.StreamWriter(memory, Console.OutputEncoding);
-                analyzer.Sentiment(SentimentTestCase[0].input, writer);
+                analyzer.Sentiment(input, writer);
                 memory.Seek(0, System.IO.SeekOrigin.Begin);
                 System.IO.StreamReader reader = new System.IO.StreamReader(memory, Console.InputEncoding);
                 string result = reader.ReadLine();
-                Assert.AreEqual(SentimentTestCase[0].answer[0], result);
+                Assert.AreEqual(answer, result);
             }
         }
     }
